@@ -53,6 +53,14 @@ def chi2(lmbda, Z, T_H, T_L, b_H, b_L, R, E_in, E_dep, d_H, d_L, attenMat, zRang
     T_L_d0 = np.dot(E_dep, R @ (m*b_L)) / d_L  
     return  (T_H_d0 - T_H)**2 / T_H_d0 + (T_L_d0 - T_L)**2 / T_L_d0
 
+def loadCargoImage(filename):
+    """Loads 6 and 4 MeV cargo images from '1.npy', '2.npy', and '3.npy'"""
+    int16Max = 2**16 - 1
+    im = np.load(filename)
+    im_6MeV = im[:,:,0].astype(float)
+    im_4MeV = im[:,:,1].astype(float)
+    return im_6MeV / int16Max, im_4MeV / int16Max
+
 def calcAttenMat(E_in, zRange):
     attenMat = np.zeros((E_in.size, zRange.size))
     for i in range(zRange.size):
