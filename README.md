@@ -1,6 +1,6 @@
 # ZCON
 
-ZCON is a method for approximating the atomic number of materials from a radiograph. For a given pair of images taking using two different energies, ZCON calculates the area density 'lambda' and atomic number 'Z' that best reproduces the transmission values for each pixel on the input images.
+ZCON is a module for approximating the atomic number of materials from a radiograph. For a given pair of images taking using two different energies, ZCON calculates the area density 'lambda' and atomic number 'Z' that best reproduces the transmission values for each pixel on the input images. ZCON is implemented in both Julia and Python, although it is recommended to be run in Julia due to improved performance.
     
 ## To run:
 
@@ -26,9 +26,9 @@ im_lambda, im_Z = processImage(im_H, im_L, b_H, b_L, R, E_in, E_dep)
 
 ## Example:
 
-The directory 'data' contains working data using radiograph images taken from an Rapiscan Eagle R60 scanner. b_H and b_L are simulated 6 MeV and 4 MeV Bremsstrahlung beam spectra using a tungsten target backed by copper, and the response matrix R is generated from simulations of Cadmium Tungstate (CdWO4) crystals.
+The subdirectory 'data' contains three example images ('1.npy', '2.npy', and '3.npy') from radiographs taken by a Rapiscan Eagle R60 scanner. Furthermore, 'data' contains 'b_H.npy' and 'b_L.npy', which are simulated 6 MeV and 4 MeV Bremsstrahlung beam spectra using a tungsten target backed by copper. The response matrix 'R.npy' is generated from simulations of Cadmium Tungstate (CdWO4) crystals with binning defined in 'E_dep.npy' and 'E_in.npy'.
 
-To run:
+To run (takes approximately 15-20 minutes with 4 processors):
 
 ```console
 julia -i JuliaExample.jl
@@ -36,10 +36,9 @@ julia -i JuliaExample.jl
 
 ## A note about attenMat
 
-The input attenMat can be generated using the XCOM module (https://github.com/plalor/XCOM). XCOM currently only supports Python, so attenMat would need to be constructed and saved in Python:
-
+The input `attenMat` can be generated using the XCOM module (https://github.com/plalor/XCOM). A function `calcAttenMat` to do so is included in 'utils.py'. XCOM currently only supports Python, so `attenMat` would need to be constructed and saved in Python:
 ```python
-from XCOM import MassAttenCoef
+from utils import calcAttenMat
 zRange = np.arange(1, 93) # Hydrogen through Uranium
 attenMat = calcAttenMat(E_in, zRange)
 np.save("attenMat", attenMat)
