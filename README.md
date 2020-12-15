@@ -6,11 +6,11 @@ ZCON is a method for approximating the atomic number of materials from a radiogr
 
 An example script using 4 processors is shown in JuliaExample.jl. This should be used as a template, where the npzread calls are replaced your image, beam spectrum, response matrix, and attenuation matrix. The required inputs are as follows:
 
---  im_H and im_L, the two images taken at different energies
---  b_H and b_L, the beam energies used to produce im_H and im_L
---  R, the detector response matrix
---  E_in and E_dep, the energy bin values of R and b
--- attenMat, a matrix of mass attenuation coefficients
+* `im_H` and `im_L`, the two images taken at different energies
+* `b_H` and `b_L`, the beam energies used to produce im_H and im_L
+* `R`, the detector response matrix
+* `E_in` and `E_dep`, the energy bin values of R and b
+* `attenMat`, a matrix of mass attenuation coefficients
 
 See the documentation in ZCON.jl for more details. The core of JuliaExample.jl are the following commands:
 ```julia
