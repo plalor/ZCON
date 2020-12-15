@@ -21,14 +21,6 @@ def runNewton(T_H, T_L, b_H, b_L, R, E_in, E_dep, attenMat, zRange):
         minima[i] = chi2(lmbda, Z, *p)
     return lmbdas, minima
 
-def chi2(lmbda, Z, T_H, T_L, b_H, b_L, R, E_in, E_dep, d_H, d_L, attenMat, zRange):
-    """Computes the chi-squared error"""
-    atten = attenMat[:,Z - zRange[0]]
-    m = np.exp(-atten * lmbda)
-    T_H_d0 = np.dot(E_dep, R @ (m*b_H)) / d_H
-    T_L_d0 = np.dot(E_dep, R @ (m*b_L)) / d_L  
-    return  (T_H_d0 - T_H)**2 / T_H_d0 + (T_L_d0 - T_L)**2 / T_L_d0
-
 def newton(lmbda, Z, T_H, T_L, b_H, b_L, R, E_in, E_dep, d_H, d_L, attenMat, zRange, nsteps = 10):
     """Performs 'nsteps' Newton Steps"""
     atten = attenMat[:,Z - zRange[0]]
@@ -52,6 +44,14 @@ def newton(lmbda, Z, T_H, T_L, b_H, b_L, R, E_in, E_dep, d_H, d_L, attenMat, zRa
         
         lmbda = lmbda - d1 / d2
     return lmbda
+
+def chi2(lmbda, Z, T_H, T_L, b_H, b_L, R, E_in, E_dep, d_H, d_L, attenMat, zRange):
+    """Computes the chi-squared error"""
+    atten = attenMat[:,Z - zRange[0]]
+    m = np.exp(-atten * lmbda)
+    T_H_d0 = np.dot(E_dep, R @ (m*b_H)) / d_H
+    T_L_d0 = np.dot(E_dep, R @ (m*b_L)) / d_L  
+    return  (T_H_d0 - T_H)**2 / T_H_d0 + (T_L_d0 - T_L)**2 / T_L_d0
 
 def calcAttenMat(E_in, zRange):
     attenMat = np.zeros((E_in.size, zRange.size))

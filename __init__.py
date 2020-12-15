@@ -34,6 +34,7 @@ def processImage(im_H, im_L, b_H, b_L, R, E_in, E_dep):
     im_lambda : shape (h, l) approximation of the area density of pixel
     
     im_Z      : shape (h, l) approximation of the atomic number of each pixel
+    
     """
     Z1, Z2 = 1, 92
     zRange = np.arange(Z1, Z2+1)
