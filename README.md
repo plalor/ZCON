@@ -1,25 +1,25 @@
 # ZCON
 
-ZCON is a module for approximating the atomic number of materials from a radiograph. For a given pair of images taking using two different energies, ZCON calculates the area density 'lambda' and atomic number 'Z' that best reproduces the transmission values for each pixel on the input images. ZCON is implemented in both Julia and Python, although it is recommended to be run in Julia due to improved performance.
+ZCON is a high performance Julia module for approximating the area density and atomic number of materials from a radiograph. For a given pair of images taking using two different incident energy spectra, ZCON calculates the area density 'lambda' and atomic number 'Z' that best reproduces the transmission values for each pixel on the input images. ZCON is implemented in both Julia and Python, although it is recommended to be run in Julia due to significantly improved performance.
     
 ## To run:
 
-An example script using 4 processors is shown in JuliaExample.jl. This should be used as a template, where the npzread calls are replaced your image(s), beam spectrum, response matrix, and attenuation matrix. The required inputs are as follows:
+An example script using 4 processors is shown in JuliaExample.jl. This should be used as a run template, where the npzread calls are replaced your image(s), beam spectra, response matrix, and attenuation matrix. The required inputs are as follows:
 
 * `im_H` and `im_L`, the two images taken at different energies
 * `b_H` and `b_L`, the beam energies used to produce im_H and im_L
 * `R`, the detector response matrix
 * `E_in` and `E_dep`, the energy bin values of R and b
-* `attenMat`, a matrix of mass attenuation coefficients
+* `attenMat`, a matrix of mass attenuation coefficients (see note below)
 
-See the documentation in ZCON.jl for more details. The core of JuliaExample.jl are the following commands:
+See the documentation in ZCON.jl for more details on the method inputs and outputs. The core of JuliaExample.jl are the following commands:
 ```julia
 include("ZCON.jl")
 tables = createTables(b_H, b_L, R, E_in, E_dep, attenMat, lmbdaRange, zRange)
 im_lambda, im_Z = processImage(im_H, im_L, lmbdaRange, zRange, tables)
 ```
 
-The call to `createTables` (on a mesh defined by `lmbdaRange` and `zRange`) will create a lookup table of the reconstructed pixel transmission `T_hat` and its derivatives. A typical range for `lmbdaRange` is 0 to 300 g/cm^2 and `zRange` is 1 to 92. The subsequent call to `processImage` iterates over all pixels in the image and finds the area density `lambda` and atomic number `Z` that minimize chi-squared.
+The call to `createTables` (on a mesh defined by `lmbdaRange` and `zRange`) will create a lookup table of the reconstructed pixel transmission `T_hat` and its derivatives. A typical range for `lmbdaRange` is 0 to 300 g/cm^2 and `zRange` is 1 to 92. The subsequent call to `processImage` iterates over all pixels in the image and finds the area density `lambda` and atomic number `Z` that minimize the loss.
 
 A working version exists for python, although it is significantly slower. It can be run as follows:
 ```python
