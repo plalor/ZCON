@@ -34,7 +34,7 @@ To run (takes approximately 15-20 minutes with 4 processors):
 julia -i JuliaExample.jl
 ```
 
-The subdirectory 'data/out' contains the outputs of the runs as '.npy' files, along with visualizations if you just want to view the results.
+The subdirectory 'data/out' contains the outputs of the runs as '.npy' files along with visualizations in '.png' format if you just want to view the results.
 
 ## A note about attenMat
 
