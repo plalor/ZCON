@@ -48,9 +48,7 @@ function processImage(im_H, im_L, b_H, b_L, R, E_in, E_dep, attenMat)
     im_Z = SharedArray{Float64}(h, l)
     t0 = datetime2unix(now())
     @sync @distributed for k=1:h*l
-        T_H = im_H[k]
-        T_L = im_L[k]
-        lmbdas, minima = runNewton(T_H, T_L, b_H, b_L, R, E_in, E_dep, attenMat, zRange)
+        lmbdas, minima = runNewton(im_H[k], im_L[k], b_H, b_L, R, E_in, E_dep, attenMat, zRange)
         idx = argmin(minima)
         im_lambda[k] = lmbdas[idx]
         im_Z[k] = zRange[idx]
