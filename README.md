@@ -34,6 +34,8 @@ To run (takes approximately 15-20 minutes with 4 processors):
 julia -i JuliaExample.jl
 ```
 
+The subdirectory 'data/out' contains the outputs of the runs as '.npy' files, along with visualizations if you just want to view the results.
+
 ## A note about attenMat
 
 The input `attenMat` can be generated using the XCOM module (https://github.com/plalor/XCOM). A function `calcAttenMat` to do so is included in 'utils.py'. XCOM currently only supports Python, so `attenMat` would need to be constructed and saved in Python:
