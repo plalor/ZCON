@@ -9,16 +9,20 @@ addprocs(4)
     int16Max = 2^16 - 1
     im = npzread("data/$(imID).npy")
     im_H = float(im[:,:,1]) / int16Max
-    im_L = float(im[:,:,2]) / int16Max
+    im_L = float(im[:,:,2]) / int16Max    
     b_H = npzread("data/b6MeV.npy")
     b_L = npzread("data/b4MeV.npy")
     R = npzread("data/R.npy")
     E_in = npzread("data/E_in.npy")
     E_dep = npzread("data/E_dep.npy")
     attenMat = npzread("data/attenMat.npy")
+    
+    zRange = Array(1:92)
+    lmbdaRange = Array(LinRange(0, 300, Int(1e4)))
 end
 
-im_lambda, im_Z = processImage(im_H, im_L, b_H, b_L, R, E_in, E_dep, attenMat)
+tables = createTables(b_H, b_L, R, E_in, E_dep, attenMat, lmbdaRange, zRange)
+im_lambda, im_Z = processImage(im_H, im_L, lmbdaRange, zRange, tables)
 npzwrite("data/out/im$(imID)_lambda.npy", im_lambda)
 npzwrite("data/out/im$(imID)_Z.npy", im_Z)
 

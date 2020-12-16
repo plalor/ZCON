@@ -4,7 +4,7 @@ ZCON is a module for approximating the atomic number of materials from a radiogr
     
 ## To run:
 
-An example script using 4 processors is shown in JuliaExample.jl. This should be used as a template, where the npzread calls are replaced your image, beam spectrum, response matrix, and attenuation matrix. The required inputs are as follows:
+An example script using 4 processors is shown in JuliaExample.jl. This should be used as a template, where the npzread calls are replaced your image(s), beam spectrum, response matrix, and attenuation matrix. The required inputs are as follows:
 
 * `im_H` and `im_L`, the two images taken at different energies
 * `b_H` and `b_L`, the beam energies used to produce im_H and im_L
@@ -15,20 +15,24 @@ An example script using 4 processors is shown in JuliaExample.jl. This should be
 See the documentation in ZCON.jl for more details. The core of JuliaExample.jl are the following commands:
 ```julia
 include("ZCON.jl")
-im_lambda, im_Z = processImage(im_H, im_L, b_H, b_L, R, E_in, E_dep, attenMat)
+tables = createTables(b_H, b_L, R, E_in, E_dep, attenMat, lmbdaRange, zRange)
+im_lambda, im_Z = processImage(im_H, im_L, lmbdaRange, zRange, tables)
 ```
+
+The call to `createTables` (on a mesh defined by `lmbdaRange` and `zRange`) will create a lookup table of the reconstructed pixel transmission `T_hat` and its derivatives. A typical range for `lmbdaRange` is 0 to 300 g/cm^2 and `zRange` is 1 to 92. The subsequent call to `processImage` iterates over all pixels in the image and finds the area density `lambda` and atomic number `Z` that minimize chi-squared.
 
 A working version exists for python, although it is significantly slower. It can be run as follows:
 ```python
-from ZCON import processImage
-im_lambda, im_Z = processImage(im_H, im_L, b_H, b_L, R, E_in, E_dep)
+from ZCON import createTables, processImage
+tables = createTables(b_H, b_L, R, E_in, E_dep, lmbdaRange, zRange)
+im_lambda, im_Z = processImage(im_H, im_L, lmbdaRange, zRange, tables)
 ```
 
 ## Example:
 
 The subdirectory 'data' contains three example images ('1.npy', '2.npy', and '3.npy') from radiographs taken by a Rapiscan Eagle R60 scanner. Furthermore, 'data' contains 'b_H.npy' and 'b_L.npy', which are simulated 6 MeV and 4 MeV Bremsstrahlung beam spectra using a tungsten target backed by copper. The response matrix 'R.npy' is generated from simulations of Cadmium Tungstate (CdWO4) crystals with binning defined in 'E_dep.npy' and 'E_in.npy'.
 
-To run (takes approximately 15-20 minutes with 4 processors):
+To run:
 
 ```console
 julia -i JuliaExample.jl
