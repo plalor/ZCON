@@ -11,20 +11,20 @@ def createTables(b_H, b_L, R, E_in, E_dep, lmbdaRange, zRange):
     
     Parameters
     ----------
-            
+    
     b_H : shape (n,) representing the initial beam energy used to measure im_H
     
     b_L : shape (n,) representing the initial beam energy used to measure im_L
     
-    R : Response matrix of shape (m, n), mapping energy deposited in the detector 
+    R : Response matrix of shape (m, n), mapping energy deposited in the detector
         (E_dep) to incident photon energies (E_in). The energy bin widths dE_dep and
         dE_in need to be implicitly folded into the response matrix
-                
+    
     E_in : shape (n,) of energy bin values of the initial beam energies b_H and b_L
     
     E_dep : shape (m,) of energy bin values corresponding to the rows of the response
             matrix R
-            
+    
     lmbdaRange : shape(a,) array of 'lambda' values at which to calculate T's
     
     zRange : shape(b,) array of 'Z' values at which to calculate T's (usually 1:92)
@@ -81,12 +81,12 @@ def processImage(im_H, im_L, lmbdaRange, zRange, tables):
     
     Parameters
     ----------
-    im_H : shape (h, l) image taken using an initial beam energy b_H, where each pixel 
+    im_H : shape (h, l) image taken using an initial beam energy b_H, where each pixel
            entry is a tranmission value between 0 and 1
-            
-    im_L : shape (h, l) image taken using an initial beam energy b_L, where each pixel 
+    
+    im_L : shape (h, l) image taken using an initial beam energy b_L, where each pixel
            entry is a tranmission value between 0 and 1
-            
+    
     lmbdaRange : shape(a,) array of 'lambda' values
     
     zRange : shape(b,) array of 'Z' values (usually 1:92)
@@ -106,9 +106,9 @@ def processImage(im_H, im_L, lmbdaRange, zRange, tables):
     h, l = im_H.shape
     im_lambda = np.zeros((h, l))
     im_Z = np.zeros((h, l))
+    print("Processing image...")
     t0 = time()
     for i in range(h):
-        print("Processing image row %d of %d..." % (i+1, h))
         for j in range(l):
             lmbdas, minima = runNewton(im_H[i, j], im_L[i, j], lmbdaRange, zRange, tables)
             idx = np.argmin(minima)

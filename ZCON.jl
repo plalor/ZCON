@@ -12,20 +12,20 @@ function createTables(b_H, b_L, R, E_in, E_dep, attenMat, lmbdaRange, zRange)
     
     Parameters
     ----------
-            
+    
     b_H : shape (n,) representing the initial beam energy used to measure im_H
     
     b_L : shape (n,) representing the initial beam energy used to measure im_L
     
-    R : Response matrix of shape (m, n), mapping energy deposited in the detector 
+    R : Response matrix of shape (m, n), mapping energy deposited in the detector
         (E_dep) to incident photon energies (E_in). The energy bin widths dE_dep and
         dE_in need to be implicitly folded into the response matrix
-                
+    
     E_in : shape (n,) of energy bin values of the initial beam energies b_H and b_L
     
     E_dep : shape (m,) of energy bin values corresponding to the rows of the response
             matrix R
-            
+    
     lmbdaRange : shape(a,) array of 'lambda' values at which to calculate T's
     
     zRange : shape(b,) array of 'Z' values at which to calculate T's (usually 1:92)
@@ -86,12 +86,12 @@ function processImage(im_H, im_L, lmbdaRange, zRange, tables)
     
     Parameters
     ----------
-    im_H : shape (h, l) image taken using an initial beam energy b_H, where each pixel 
+    im_H : shape (h, l) image taken using an initial beam energy b_H, where each pixel
            entry is a tranmission value between 0 and 1
-            
-    im_L : shape (h, l) image taken using an initial beam energy b_L, where each pixel 
+    
+    im_L : shape (h, l) image taken using an initial beam energy b_L, where each pixel
            entry is a tranmission value between 0 and 1
-            
+    
     lmbdaRange : shape(a,) array of 'lambda' values
     
     zRange : shape(b,) array of 'Z' values (usually 1:92)
@@ -111,6 +111,7 @@ function processImage(im_H, im_L, lmbdaRange, zRange, tables)
     h, l = size(im_H)
     im_lambda = SharedArray{Float64}(h, l)
     im_Z = SharedArray{Float64}(h, l)
+    @printf("Processing image...")
     t0 = datetime2unix(now())
     @sync @distributed for k=1:h*l
         lmbdas, minima = runNewton(im_H[k], im_L[k], lmbdaRange, zRange, tables)
@@ -143,32 +144,13 @@ function runNewton(T_H, T_L, lmbdaRange, zRange, tables)
     return lmbdas, minima
 end
 
-function lookup(lmbda, Z, lmbdaRange, zRange, tables)
-    """Calculates T, dT/dLmbda, and d2T/dLmbda2 from tables"""
-    lmbda = max(0, min(lmbda, lmbdaRange[end])) # must be within table
-    a = length(lmbdaRange)
-    f = (lmbda - lmbdaRange[1]) / (lmbdaRange[end] - lmbdaRange[1])
-    idx1 = Int(1 + round(f * (a - 1)))
-    idx2 = Z - zRange[1] + 1
-    T_H_d0, T_L_d0, T_H_d1, T_L_d1, T_H_d2, T_L_d2 = tables
-    T_H0 = T_H_d0[idx1, idx2]
-    T_L0 = T_L_d0[idx1, idx2]
-    T_H1 = T_H_d1[idx1, idx2]
-    T_L1 = T_L_d1[idx1, idx2]
-    T_H2 = T_H_d2[idx1, idx2]
-    T_L2 = T_L_d2[idx1, idx2]        
-    return T_H0, T_L0, T_H1, T_L1, T_H2, T_L2
-end
-
 function newton(lmbda, Z, T_H, T_L, lmbdaRange, zRange, tables, nsteps)
     """Performs 'nsteps' Newton Steps"""
     for _ = 1:nsteps
         T_H0, T_L0, T_H1, T_L1, T_H2, T_L2 = lookup(lmbda, Z, lmbdaRange, zRange, tables)
-    
         d1 = (1 - T_H^2 / T_H0^2) * T_H1 + (1 - T_L^2 / T_L0^2) * T_L1
         d2 = 2*T_H^2 * T_H1^2 / (T_H0^3) + (1 - T_H^2 / T_H0^2) * T_H2 +
              2*T_L^2 * T_L1^2 / (T_L0^3) + (1 - T_L^2 / T_L0^2) * T_L2
-        
         lmbda = lmbda - d1 / d2
     end
     return lmbda
@@ -177,6 +159,20 @@ end
 function chi2(lmbda, Z, T_H, T_L, lmbdaRange, zRange, tables)
     """Computes the chi-squared error"""
     T_H0, T_L0, T_H1, T_L1, T_H2, T_L2 = lookup(lmbda, Z, lmbdaRange, zRange, tables)
-        
     return  (T_H0 - T_H)^2 / T_H0 + (T_L0 - T_L)^2 / T_L0
+end
+
+function lookup(lmbda, Z, lmbdaRange, zRange, tables)
+    """Calculates T, dT/dLmbda, and d2T/dLmbda2 from tables"""
+    lmbda = max(0, min(lmbda, lmbdaRange[end])) # must be within table
+    f = (lmbda - lmbdaRange[1]) / (lmbdaRange[end] - lmbdaRange[1])
+    idx1 = Int(1 + round(f * (length(lmbdaRange) - 1)))
+    idx2 = Z - zRange[1] + 1
+    T_H0 = tables[1][idx1, idx2]
+    T_L0 = tables[2][idx1, idx2]
+    T_H1 = tables[3][idx1, idx2]
+    T_L1 = tables[4][idx1, idx2]
+    T_H2 = tables[5][idx1, idx2]
+    T_L2 = tables[6][idx1, idx2]
+    return T_H0, T_L0, T_H1, T_L1, T_H2, T_L2
 end

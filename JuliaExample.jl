@@ -16,7 +16,6 @@ addprocs(4)
     E_in = npzread("data/E_in.npy")
     E_dep = npzread("data/E_dep.npy")
     attenMat = npzread("data/attenMat.npy")
-    
     zRange = Array(1:92)
     lmbdaRange = Array(LinRange(0, 300, Int(1e4)))
 end

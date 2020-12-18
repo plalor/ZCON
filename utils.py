@@ -1,5 +1,5 @@
 import numpy as np
-from XCOM import MassAttenCoef
+from XCOM import MassAttenCoef, MassEnergyAbsorpCoef
 
 def runNewton(T_H, T_L, lmbdaRange, zRange, tables):
     """Performs a Newton minimization on pixel T_H, T_L"""
@@ -31,18 +31,15 @@ def newton(lmbda, Z, T_H, T_L, lmbdaRange, zRange, tables, nsteps = 10):
 def lookup(lmbda, Z, lmbdaRange, zRange, tables):
     """Calculates T, dT/dLmbda, and d2T/dLmbda2 from tables"""
     lmbda = max(0, min(lmbda, lmbdaRange[-1])) # must be within table
-    a = lmbdaRange.size
     f = (lmbda - lmbdaRange[0]) / (lmbdaRange[-1] - lmbdaRange[0])
-    idx1 = np.rint(f * (a - 1)).astype('int')
-    idx1 = min(idx1, a - 1) # reached end of table
+    idx1 = np.rint(f * (lmbdaRange.size - 1)).astype('int')
     idx2 = Z - zRange[0]
-    T_H_d0, T_L_d0, T_H_d1, T_L_d1, T_H_d2, T_L_d2 = tables
-    T_H0 = T_H_d0[idx1, idx2]
-    T_L0 = T_L_d0[idx1, idx2]
-    T_H1 = T_H_d1[idx1, idx2]
-    T_L1 = T_L_d1[idx1, idx2]
-    T_H2 = T_H_d2[idx1, idx2]
-    T_L2 = T_L_d2[idx1, idx2]
+    T_H0 = tables[0][idx1, idx2]
+    T_L0 = tables[1][idx1, idx2]
+    T_H1 = tables[2][idx1, idx2]
+    T_L1 = tables[3][idx1, idx2]
+    T_H2 = tables[4][idx1, idx2]
+    T_L2 = tables[5][idx1, idx2]
     return T_H0, T_L0, T_H1, T_L1, T_H2, T_L2
 
 def chi2(lmbda, Z, T_H, T_L, lmbdaRange, zRange, tables):
@@ -65,3 +62,11 @@ def calcAttenMat(E_in, zRange):
         atten = MassAttenCoef(E_in, Z)
         attenMat[:,i] = atten
     return attenMat
+
+def calcAbsorpMat(E_in, zRange):
+    absorpMat = np.zeros((E_in.size, zRange.size))
+    for i in range(zRange.size):
+        Z = zRange[i]
+        absorp = MassEnergyAbsorpCoef(E_in, Z)
+        absorpMat[:,i] = absorp
+    return absorpMat
