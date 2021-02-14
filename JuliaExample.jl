@@ -1,27 +1,34 @@
 using Distributed
-addprocs(4)
+addprocs(1)
 
 @everywhere begin
     include("ZCON.jl")
     using Plots
     using NPZ
     imID = 1
-    int16Max = 2^16 - 1
-    im = npzread("data/$(imID).npy")
-    im_H = float(im[:,:,1]) / int16Max
-    im_L = float(im[:,:,2]) / int16Max    
+    loadTables = true
+    im_H = npzread("data/im$(imID)_H.npy")
+    im_L = npzread("data/im$(imID)_L.npy")
+    imVar_H = npzread("data/imVar$(imID)_H.npy")
+    imVar_L = npzread("data/imVar$(imID)_L.npy")
     b_H = npzread("data/b6MeV.npy")
     b_L = npzread("data/b4MeV.npy")
     R = npzread("data/R.npy")
-    E_in = npzread("data/E_in.npy")
+    E_g = npzread("data/E_g.npy")
     E_dep = npzread("data/E_dep.npy")
     attenMat = npzread("data/attenMat.npy")
+    if loadTables
+        tables = npzread("data/tables.npy")
+        tables = tuple([tables[idx,:,:] for idx in 1:size(tables, 1)]...)
+    end
     zRange = Array(1:92)
     lmbdaRange = Array(LinRange(0, 300, Int(1e4)))
 end
 
-tables = createTables(b_H, b_L, R, E_in, E_dep, attenMat, lmbdaRange, zRange)
-im_lambda, im_Z = processImage(im_H, im_L, lmbdaRange, zRange, tables)
+if ~loadTables
+    tables = createTables(b_H, b_L, R, E_g, E_dep, attenMat, lmbdaRange, zRange)
+end
+im_lambda, im_Z = processImage(im_H, im_L, imVar_H, imVar_L, lmbdaRange, zRange, tables)
 npzwrite("data/out/im$(imID)_lambda.npy", im_lambda)
 npzwrite("data/out/im$(imID)_Z.npy", im_Z)
 
