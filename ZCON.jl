@@ -74,8 +74,8 @@ function createTables(b_H, b_L, R, E_g, E_dep, attenMat, lmbdaRange, zRange)
             d_L1 = dot(q, m1 .* b_L)
             d_H2 = dot(q, m2 .* b_H)
             d_L2 = dot(q, m2 .* b_L)
-            P_H_d0[i,j] = log(d_H) - log(d_H0)
-            P_L_d0[i,j] = log(d_L) - log(d_L0)
+            P_H_d0[i,j] = log(d_H / d_H0)
+            P_L_d0[i,j] = log(d_L / d_L0)
             P_H_d1[i,j] = -d_H1 / d_H0
             P_L_d1[i,j] = -d_L1 / d_L0
             P_H_d2[i,j] = (d_H1^2 - d_H0 * d_H2) / d_H0^2

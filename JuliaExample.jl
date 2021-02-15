@@ -6,7 +6,7 @@ addprocs(1)
     using Plots
     using NPZ
     imID = 1
-    loadTables = true
+    loadTables = false
     im_H = npzread("data/im$(imID)_H.npy")
     im_L = npzread("data/im$(imID)_L.npy")
     imVar_H = npzread("data/imVar$(imID)_H.npy")
