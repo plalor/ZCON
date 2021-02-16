@@ -31,7 +31,7 @@ im_lambda, im_Z = processImage(im_H, im_L, imVar_H, imVar_L, lmbdaRange, zRange,
 
 ## Example:
 
-The subdirectory 'data' contains ten example images from radiographs taken by a Rapiscan Eagle R60 scanner. Furthermore, 'data' contains 'b_H.npy' and 'b_L.npy', which are simulated 6 MeV and 4 MeV Bremsstrahlung beam spectra using a tungsten target backed by copper. The response matrix 'R.npy' is generated from simulations of Cadmium Tungstate (CdWO4) crystals with binning defined in 'E_g.npy' and 'E_dep.npy'.
+The subdirectory 'data' contains three example images from radiographs taken by a Rapiscan Eagle R60 scanner ('1.npy', '2.npy', and '3.npy'). Furthermore, 'data' contains 'b_H.npy' and 'b_L.npy', which are simulated 6 MeV and 4 MeV Bremsstrahlung beam spectra using a tungsten target backed by copper. The response matrix 'R.npy' is generated from simulations of Cadmium Tungstate (CdWO4) crystals with binning defined in 'E_g.npy' and 'E_dep.npy'.
 
 To run:
 

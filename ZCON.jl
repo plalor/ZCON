@@ -60,8 +60,8 @@ function createTables(b_H, b_L, R, E_g, E_dep, attenMat, lmbdaRange, zRange)
     d_L = dot(q, b_L)
     @printf("Building lookup tables...")
     t0 = datetime2unix(now())
-    for i in 1:a
-        for j in 1:b
+    for i = 1:a
+        for j = 1:b
             lmbda = lmbdaRange[i]
             Z = zRange[j]
             atten = attenMat[:,Z - zRange[1] + 1]
