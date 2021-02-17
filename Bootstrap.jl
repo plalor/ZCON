@@ -1,5 +1,5 @@
 using Distributed
-addprocs(1)
+addprocs(2)
 
 @everywhere begin
     include("ZCON.jl")
@@ -34,7 +34,7 @@ im_H_resamp, im_L_resamp = resample(im_H, im_L, nBootstrap)
 
 for bootstrapID = 1:nBootstrap
     @printf("Iteration %d of %d: ", bootstrapID, nBootstrap)
-    im_lambda, im_Z = processImage(im_H_resamp[bootstrapID,:,:], im_L_resamp[bootstrapID,:,:], 
+    im_lambda, im_Z = processImage(im_H_resamp[bootstrapID,:,:], im_L_resamp[bootstrapID,:,:],
                                    imVar_H, imVar_L, lmbdaRange, zRange, tables)
     npzwrite("data/bootstrap/$(imID)/bootstrap$(bootstrapID)_lambda.npy", im_lambda)
     npzwrite("data/bootstrap/$(imID)/bootstrap$(bootstrapID)_Z.npy", im_Z)

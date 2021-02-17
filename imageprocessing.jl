@@ -3,7 +3,7 @@ using ImageFiltering
 using Distributions
 
 int16Max = 2^16 - 1
-kernel = centered(ones(3, 3) ./ 9)
+kernel = centered(ones(3, 3) / 9)
 
 function loadCargoImage(filename)
     """Loads dual energy cargo images from 'filename'"""

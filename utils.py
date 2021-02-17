@@ -1,5 +1,5 @@
 import numpy as np
-from XCOM import MassAttenCoef, MassEnergyAbsorpCoef
+from XCOM import MassAttenCoef
 
 def runNewton(P_H, P_L, Var_H, Var_L, lmbdaRange, zRange, tables):
     """Performs a Newton minimization on pixel P_H, P_L"""
@@ -54,11 +54,3 @@ def calcAttenMat(E_g, zRange):
         atten = MassAttenCoef(E_g, Z)
         attenMat[:,i] = atten
     return attenMat
-
-def calcAbsorpMat(E_g, zRange):
-    absorpMat = np.zeros((E_g.size, zRange.size))
-    for i in range(zRange.size):
-        Z = zRange[i]
-        absorp = MassEnergyAbsorpCoef(E_g, Z)
-        absorpMat[:,i] = absorp
-    return absorpMat
