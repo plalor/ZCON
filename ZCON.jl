@@ -125,10 +125,15 @@ function processImage(im_H, im_L, imVar_H, imVar_L, lmbdaRange, zRange, tables)
     @printf("Processing image...")
     t0 = datetime2unix(now())
     @sync @distributed for k=1:h*l
-        lmbdas, minima = runNewton(im_H[k], im_L[k], imVar_H[k], imVar_L[k], lmbdaRange, zRange, tables)
-        idx = argmin(minima)
-        im_lambda[k] = lmbdas[idx]
-        im_Z[k] = zRange[idx]
+        if !isfinite(im_H[k]) | !isfinite(im_L[k]) | !isfinite(imVar_H[k]) | !isfinite(imVar_L[k])
+            im_lambda[k] = 0
+            im_Z[k] = 0
+        else
+            lmbdas, minima = runNewton(im_H[k], im_L[k], imVar_H[k], imVar_L[k], lmbdaRange, zRange, tables)
+            idx = argmin(minima)
+            im_lambda[k] = lmbdas[idx]
+            im_Z[k] = zRange[idx]
+        end
     end
     t1 = datetime2unix(now())
     @printf("Completed in %d seconds\n", t1 - t0)

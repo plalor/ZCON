@@ -1,5 +1,5 @@
 using Distributed
-addprocs(2)
+addprocs(1)
 
 @everywhere begin
     include("ZCON.jl")
